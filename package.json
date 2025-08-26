@@ -1,0 +1,49 @@
+{
+  "name": "local-x402-facilitator",
+  "version": "0.1.0",
+  "description": "An x402 facilitator server for local development that works natively with Tenderly Virtual TestNets. Avoiding bottlenecks while testing and creating sandbox environments for x402 development.",
+  "main": "dist/index.js",
+  "bin": {
+    "local-x402-facilitator": "./dist/bin/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "cli": "node dist/bin/cli.js",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "test": "jest"
+  },
+  "keywords": [
+    "x402",
+    "facilitator",
+    "tenderly",
+    "testnet",
+    "server",
+    "local-development"
+  ],
+  "author": "Miljan Tekic <miljan.tekic@gmail.com>",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0"
+  }
+}
