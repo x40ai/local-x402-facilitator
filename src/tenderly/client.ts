@@ -157,24 +157,24 @@ class TenderlyClient {
             console.log(chalk.yellow("Facilitator has sufficient balance:"), formatEther(balance), "ETH");
         }
 
-        if (config.dummySignerAddress) {
+        if (config.testWalletAddress) {
             const defaultAsset = getDefaultAsset(ChainIdToNetwork[base.id]);
 
-            const dummySignerBalance = await client.readContract({
+            const testWalletBalance = await client.readContract({
                 address: defaultAsset.address,
                 abi: erc20Abi,
                 functionName: "balanceOf",
-                args: [config.dummySignerAddress],
+                args: [config.testWalletAddress],
             });
 
-            const dummySignerBalanceFormatted = formatUnits(dummySignerBalance, defaultAsset.decimals);
+            const testWalletBalanceFormatted = formatUnits(testWalletBalance, defaultAsset.decimals);
 
-            if (parseFloat(dummySignerBalanceFormatted) < MIN_ERC_20_BALANCE) {
-                console.log(chalk.yellow(`Dummy signer balance is less than ${MIN_ERC_20_BALANCE} ${defaultAsset.eip712.name}`));
+            if (parseFloat(testWalletBalanceFormatted) < MIN_ERC_20_BALANCE) {
+                console.log(chalk.yellow(`Test wallet balance is less than ${MIN_ERC_20_BALANCE} ${defaultAsset.eip712.name}`));
 
-                await this.fundErc20Wallet(client, config.dummySignerAddress, MIN_ERC_20_BALANCE);
+                await this.fundErc20Wallet(client, config.testWalletAddress, MIN_ERC_20_BALANCE);
             } else {
-                console.log(chalk.yellow("Dummy signer has sufficient balance:"), dummySignerBalanceFormatted, defaultAsset.eip712.name);
+                console.log(chalk.yellow("Test wallet has sufficient balance:"), testWalletBalanceFormatted, defaultAsset.eip712.name);
             }
         }
     }

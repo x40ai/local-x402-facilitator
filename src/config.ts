@@ -12,8 +12,8 @@ export interface ConfigData {
   facilitatorPort: number;
   facilitatorAddress: `0x${string}`;
   facilitatorPrivateKey: `0x${string}`;
-  dummySignerAddress?: `0x${string}`;
-  dummySignerPrivateKey?: `0x${string}`;
+  testWalletAddress?: `0x${string}`;
+  testWalletPrivateKey?: `0x${string}`;
   tenderly: {
     rpc?: string;
     accountName?: string;
@@ -146,11 +146,11 @@ class Config {
     // Validate required Tenderly fields if RPC is provided
     Config.validateTenderlyConfig(config);
 
-    if (process.env.DUMMY_SIGNER_PRIVATE_KEY) {
-      const dummySignerPrivateKey = process.env.DUMMY_SIGNER_PRIVATE_KEY as `0x${string}`;
-      const dummySignerAddress = privateKeyToAccount(dummySignerPrivateKey).address;
-      config.dummySignerAddress = dummySignerAddress;
-      config.dummySignerPrivateKey = dummySignerPrivateKey;
+    if (process.env.TEST_WALLET_PRIVATE_KEY) {
+      const testWalletPrivateKey = process.env.TEST_WALLET_PRIVATE_KEY as `0x${string}`;
+      const testWalletAddress = privateKeyToAccount(testWalletPrivateKey).address;
+      config.testWalletAddress = testWalletAddress;
+      config.testWalletPrivateKey = testWalletPrivateKey;
     }
     
     return config;
@@ -175,16 +175,16 @@ class Config {
     return this.data!.facilitatorPrivateKey;
   }
 
-  public get dummySignerAddress(): `0x${string}` | undefined {
+  public get testWalletAddress(): `0x${string}` | undefined {
     this.validateConfigIsLoaded();
 
-    return this.data!.dummySignerAddress;
+    return this.data!.testWalletAddress;
   }
 
-  public get dummySignerPrivateKey(): `0x${string}` | undefined {
+  public get testWalletPrivateKey(): `0x${string}` | undefined {
     this.validateConfigIsLoaded();
 
-    return this.data!.dummySignerPrivateKey;
+    return this.data!.testWalletPrivateKey;
   }
 
   public get tenderly() {
@@ -215,8 +215,9 @@ class Config {
       console.log('\tRPC: Not configured');
     }
 
-    if (this.data!.dummySignerAddress) {
-      console.log(`\n\tDummy Signer Address: ${chalk.magenta(this.data!.dummySignerAddress)}`);
+    if (this.data!.testWalletAddress) {
+      console.log(`\n\t${chalk.magenta("[Test Wallet Enabled]")}`);
+      console.log(`\tTest Wallet Address: ${chalk.magenta(this.data!.testWalletAddress)}`);
     }
 
     console.log('');

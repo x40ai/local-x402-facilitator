@@ -1,5 +1,7 @@
 import { Router } from "express";
 import verify from "./verify";
+import { x402Response } from "x402/types";
+import { signPaymentRequirement } from "./test-wallet";
 
 const appRouter = Router();
 
@@ -17,6 +19,15 @@ appRouter.post('/verify', async (req, res) => {
 
 appRouter.get('/settle', async (req, res) => {
     res.json({ status: 'ok' });
+});
+
+appRouter.post('/test/sign', async (req, res) => {
+    const response = req.body;
+
+    console.log(response);
+
+    const result = await signPaymentRequirement(response as x402Response);
+    return res.json(result);
 });
 
 export default appRouter;
