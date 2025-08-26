@@ -3,6 +3,8 @@ import chalk from 'chalk';
 
 import { Config, printConfig } from '../config';
 
+import appRouter from './router';
+
 let serverConfig: Config;
 
 const app = express();
@@ -10,34 +12,7 @@ const app = express();
 // Basic middleware
 app.use(express.json());
 
-// Simple logging
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  next();
-});
-
-// Routes
-app.get('/', (req, res) => {
-  res.json({ message: 'Local x402 Facilitator' });
-});
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
-
-app.get('/config', (req, res) => {
-  res.json({ 
-    facilitatorPort: serverConfig.facilitatorPort,
-    tenderlyConfigured: Boolean(serverConfig.tenderly.rpc),
-    tenderly: serverConfig.tenderly.rpc ? {
-      rpc: serverConfig.tenderly.rpc,
-      accountName: serverConfig.tenderly.accountName,
-      projectName: serverConfig.tenderly.projectName,
-      // Don't expose the access key for security
-      hasAccessKey: Boolean(serverConfig.tenderly.accessKey)
-    } : null
-  });
-});
+app.use('/', appRouter);
 
 const serverAsciiArt = [
   "/* +-------------------------------------------------------+ */",
