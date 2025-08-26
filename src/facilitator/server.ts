@@ -1,5 +1,7 @@
 import express from 'express';
-import { Config } from '../config';
+import chalk from 'chalk';
+
+import { Config, printConfig } from '../config';
 
 let serverConfig: Config;
 
@@ -37,6 +39,27 @@ app.get('/config', (req, res) => {
   });
 });
 
+const serverAsciiArt = [
+  "/* +-------------------------------------------------------+ */",
+  "/* |                                                       | */",
+  "/* |   _                     _          ___ _____  _____   | */",
+  "/* |  | |                   | |        /   |  _  |/ __  \\  | */",
+  "/* |  | |     ___   ___ __ _| | __  __/ /| | |/' |`' / /'  | */",
+  "/* |  | |    / _ \\ / __/ _` | | \\ \\/ / /_| |  /| |  / /    | */",
+  "/* |  | |___| (_) | (_| (_| | |  >  <\\___  \\ |_/ /./ /___  | */",
+  "/* |  \\_____/\\___/ \\___\\__,_|_| /_/\\_\\   |_/\\___/ \\_____/  | */",
+  "/* |                                                       | */",
+  "/* |                                                       | */",
+  "/* |  ______         _ _ _ _        _                      | */",
+  "/* |  |  ___|       (_) (_) |      | |                     | */",
+  "/* |  | |_ __ _  ___ _| |_| |_ __ _| |_ ___  _ __          | */",
+  "/* |  |  _/ _` |/ __| | | | __/ _` | __/ _ \\| '__|         | */",
+  "/* |  | || (_| | (__| | | | || (_| | || (_) | |            | */",
+  "/* |  \\_| \\__,_|\\___|_|_|_|\\__\\__,_|\\__\\___/|_|            | */",
+  "/* |                                                       | */",
+  "/* +-------------------------------------------------------+ */\n"
+].join('\n');
+
 // Start server
 export function startServer(config: Config) {
   const { facilitatorPort } = config;
@@ -45,15 +68,16 @@ export function startServer(config: Config) {
   serverConfig = config;
   
   const server = app.listen(facilitatorPort, () => {
-    console.log(`x402 Facilitator running on port ${facilitatorPort}`);
-    console.log('Facilitator started. Press Ctrl+C to stop.');
+    console.log(serverAsciiArt);
+    
+    printConfig(config);
   });
 
   // Graceful shutdown handling
   const shutdown = (signal: string) => {
-    console.log(`\nReceived ${signal}. Shutting down gracefully...`);
+    console.log(`\nReceived ${chalk.bgRed(signal)}. Shutting down gracefully...`);
     server.close(() => {
-      console.log('Server closed');
+      console.log(chalk.yellow('Server shut down.'));
       process.exit(0);
     });
   };

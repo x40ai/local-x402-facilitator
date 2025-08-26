@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { Command } from 'commander';
+import chalk from 'chalk';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -125,17 +126,14 @@ export function loadConfig(): Config {
 }
 
 export function printConfig(config: Config): void {
-  console.log('Configuration:');
-  console.log(`  Facilitator Port: ${config.facilitatorPort}`);
+  console.log(`\tFacilitator Port: ${chalk.blue(`http://localhost:${config.facilitatorPort}`)}`);
   
   if (config.tenderly.rpc) {
-    console.log('  Tenderly Configuration:');
-    console.log(`    RPC URL: ${config.tenderly.rpc}`);
-    console.log(`    Account: ${config.tenderly.accountName}`);
-    console.log(`    Project: ${config.tenderly.projectName}`);
-    console.log(`    Access Key: ${'*'.repeat(config.tenderly.accessKey?.length || 0)}`);
+    if (config.tenderly.rpc) {
+      console.log(`\tRPC URL: ${config.tenderly.rpc}`);
+    }
   } else {
-    console.log('  Tenderly: Not configured');
+    console.log('\tRPC: Not configured');
   }
   console.log('');
 }
