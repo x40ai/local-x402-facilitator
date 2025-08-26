@@ -13,9 +13,9 @@ appRouter.get('/health', (req, res) => {
 });
 
 appRouter.post('/verify', async (req, res) => {
-    const {paymentRequirements, paymentPayload} = req.body;
+    const {paymentRequirements, paymentPayload, customRpcUrl} = req.body;
 
-    const result = await verify(paymentPayload, paymentRequirements);
+    const result = await verify(paymentPayload, paymentRequirements, customRpcUrl);
 
     return res.json(result);
 });

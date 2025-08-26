@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { privateKeyToAccount } from 'viem/accounts';
+import { base } from 'viem/chains';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -193,6 +194,11 @@ class Config {
     return this.data!.tenderly;
   }
 
+  public setTenderlyRpc(rpc: string) {
+    this.data!.tenderly.rpc = rpc;
+    console.log(chalk.green("[Config] Set Tenderly RPC URL:"), rpc);
+  }
+
   validateConfigIsLoaded(): void {
     if (!this.loaded) {
       throw new ConfigError('Config not loaded');
@@ -206,13 +212,14 @@ class Config {
   public printSetup(): void {
     this.validateConfigIsLoaded();
 
+    console.log(`\tNetwork: ${chalk.blue(`🟦 ${base.name}`)}`);
     console.log(`\tFacilitator Port: ${chalk.blue(`http://localhost:${this.data!.facilitatorPort}`)}`);
     console.log(`\tFacilitator Address: ${chalk.blue(this.data!.facilitatorAddress)}`);
 
     if (this.data!.tenderly.rpc) {
       console.log(`\tRPC URL: ${chalk.blue(this.data!.tenderly.rpc)}`);
     } else {
-      console.log('\tRPC: Not configured');
+      console.log('\tRPC: Dynamic RPC URLs');
     }
 
     if (this.data!.testWalletAddress) {

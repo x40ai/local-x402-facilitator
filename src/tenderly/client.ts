@@ -77,8 +77,8 @@ class TenderlyClient {
     }
 
     setRpcUrl(rpcUrl: string) {
-        console.log(chalk.yellow("Setting RPC URL:"), rpcUrl);
         this.rpcUrl = rpcUrl;
+        config.setTenderlyRpc(rpcUrl);
     }
 
     async fundWallet(client: any, address: string, amount: number) {
@@ -100,7 +100,7 @@ class TenderlyClient {
 
     async fundErc20Wallet(client: any, address: string, amount: number) {
         const defaultAsset = getDefaultAsset(ChainIdToNetwork[base.id]);
-        
+
         const result = await client.request({
             method: "tenderly_addErc20Balance",
             params: [
@@ -123,7 +123,7 @@ class TenderlyClient {
         if (!_rpcUrl && this.dynamicRpcUrls) {
             // create vnet
             console.log(chalk.yellow("No RPC URL provided"));
-            console.log(chalk.magenta("[Tenderly Client] Fetching available Virtual TestNets"));
+            console.log(chalk.blue("[Tenderly Client] Fetching available Virtual TestNets"));
 
             const vnets = await this.getVirtualTestnets();
 
@@ -132,7 +132,7 @@ class TenderlyClient {
             if (vnets.length === 0) {
                 console.log(chalk.yellow("No Virtual TestNets found"));
                 
-                console.log(chalk.magenta("[Tenderly Client] Creating new Virtual TestNet"));
+                console.log(chalk.blue("[Tenderly Client] Creating new Virtual TestNet"));
 
                 vnet = await this.createVirtualTestnet();
 
