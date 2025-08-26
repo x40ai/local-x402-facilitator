@@ -24,9 +24,8 @@ appRouter.get('/settle', async (req, res) => {
 appRouter.post('/test/sign', async (req, res) => {
     const response = req.body;
 
-    console.log(response);
-
     const result = await signPaymentRequirement(response as x402Response);
+    
     return res.json(result);
 });
 
