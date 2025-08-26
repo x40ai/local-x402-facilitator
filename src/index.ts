@@ -1,17 +1,22 @@
-import dotenv from 'dotenv';
+import { loadConfig, printConfig, ConfigError } from './config';
+import { startServer } from './facilitator/server';
 
-// Load environment variables
-dotenv.config();
-
-export async function main() {
-  const port = process.env.PORT || 3402;
-  console.log(`Starting Local x402 Facilitator on port ${port}...`);
-  
-  // TODO: Add actual server implementation
-  console.log('Server started successfully');
+export function main() {
+  try {
+    const config = loadConfig();
+    startServer(config);
+  } catch (error) {
+    if (error instanceof ConfigError) {
+      console.error('Configuration Error:', error.message);
+      process.exit(1);
+    } else {
+      console.error('Unexpected error:', error);
+      process.exit(1);
+    }
+  }
 }
 
 // Only run if this file is executed directly
 if (require.main === module) {
-  main().catch(console.error);
+  main();
 }
