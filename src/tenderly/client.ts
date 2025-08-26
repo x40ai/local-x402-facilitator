@@ -1,13 +1,14 @@
 import axios, { AxiosInstance } from "axios";
-import { Account, createPublicClient, formatEther, parseEther, formatUnits, http, weiUnits, toHex, erc20Abi, parseUnits } from "viem";
+import { randomUUID } from "crypto";
+import chalk from "chalk";
+
+import { Account, createPublicClient, formatEther, parseEther, formatUnits, http, toHex, erc20Abi, parseUnits } from "viem";
 import { base } from "viem/chains";
-import { evm, ChainIdToNetwork, Network, schemes } from "x402/types";
+import { privateKeyToAccount } from "viem/accounts";
+import { ChainIdToNetwork } from "x402/types";
 import { getDefaultAsset } from "x402/shared";
 
 import config from "../config";
-import { privateKeyToAccount } from "viem/accounts";
-import chalk from "chalk";
-import { randomUUID } from "crypto";
 
 const MIN_BALANCE = 100;
 const MIN_ERC_20_BALANCE = 10000;
@@ -117,6 +118,19 @@ class TenderlyClient {
         return result;
     }
 
+    async verifyFacilitatorBalance(rpcUrl: string) {
+        const client = TenderlyClient.getClientForRpcUrl(rpcUrl);
+
+        const balance = await client.getBalance({
+            address: config.facilitatorAddress,
+        });
+
+        return {
+            isSufficient: parseFloat(formatEther(balance)) > MIN_BALANCE,
+            balance: formatEther(balance),
+        };
+    }
+
     async checkIfTestnetIsSetup() {
         let _rpcUrl = this.rpcUrl;
 
@@ -153,16 +167,14 @@ class TenderlyClient {
 
         const client = TenderlyClient.getClientForRpcUrl(_rpcUrl!);
 
-        const balance = await client.getBalance({
-            address: config.facilitatorAddress,
-        });
+        const {isSufficient: isFacilitatorBalanceSufficient, balance: facilitatorBalance} = await this.verifyFacilitatorBalance(_rpcUrl!);
 
-        if (parseFloat(formatEther(balance)) < MIN_BALANCE) {
+        if (!isFacilitatorBalanceSufficient) {
             console.log(chalk.yellow(`Facilitator balance is less than ${MIN_BALANCE}ETH`));
 
             await this.fundWallet(client, config.facilitatorAddress, MIN_BALANCE);
         } else {
-            console.log(chalk.yellow("Facilitator has sufficient balance:"), formatEther(balance), "ETH");
+            console.log(chalk.yellow("Facilitator has sufficient balance:"), facilitatorBalance, "ETH");
         }
 
         if (config.testWalletAddress) {
