@@ -189,7 +189,7 @@ class Config {
     console.log(`\tFacilitator Address: ${chalk.blue(this.data!.facilitatorAddress)}`);
     
     if (this.data!.tenderly.rpc) {
-      console.log(`\tRPC URL: ${this.data!.tenderly.rpc}`);
+      console.log(`\tRPC URL: ${chalk.blue(this.data!.tenderly.rpc)}`);
     } else {
       console.log('\tRPC: Not configured');
     }
