@@ -48,8 +48,11 @@ class TenderlyClient {
 
     async createVirtualTestnet() {
         const response = await this.httpClient.post("/vnets", {
+            // Generate a random UUID for the Virtual TestNet slug.
             slug: randomUUID(),
             fork_config: {
+                // Defaults to Base for the v0 version.
+                // @TODO: Add support for defining networks in config.
                 network_id: base.id,
             },
             virtual_network_config: {
@@ -59,6 +62,11 @@ class TenderlyClient {
             },
             sync_state_config: {
                 enabled: false,
+            },
+            // Virtual TestNets are created as public by default so that transactions can be viewed.
+            explorer_page_config: {
+                enabled: true,
+                verification_visibility: "src",
             },
         });
         return response.data;
