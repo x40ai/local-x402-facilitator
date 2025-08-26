@@ -1,10 +1,11 @@
-import { loadConfig, printConfig, ConfigError } from './config';
+import config, { ConfigError } from './config';
 import { startServer } from './facilitator/server';
 
 export function main() {
   try {
-    const config = loadConfig();
-    startServer(config);
+    config.loadConfig();
+
+    startServer();
   } catch (error) {
     if (error instanceof ConfigError) {
       console.error('Configuration Error:', error.message);

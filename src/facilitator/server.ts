@@ -1,11 +1,9 @@
 import express from 'express';
 import chalk from 'chalk';
 
-import { Config, printConfig } from '../config';
+import config from '../config';
 
 import appRouter from './router';
-
-let serverConfig: Config;
 
 const app = express();
 
@@ -36,16 +34,11 @@ const serverAsciiArt = [
 ].join('\n');
 
 // Start server
-export function startServer(config: Config) {
-  const { facilitatorPort } = config;
-  
-  // Store config reference for use in endpoints
-  serverConfig = config;
-  
-  const server = app.listen(facilitatorPort, () => {
+export function startServer() {
+  const server = app.listen(config.facilitatorPort, () => {
     console.log(serverAsciiArt);
     
-    printConfig(config);
+    config.printSetup();
   });
 
   // Graceful shutdown handling
