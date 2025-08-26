@@ -2,6 +2,12 @@
 
 An x402 facilitator server for local development that works natively with Tenderly Virtual TestNets. Avoiding bottlenecks while testing and creating sandbox environments for x402 development.
 
+## Motivation
+
+* Working with x402 on Base Sepolia and other Testnets requires faucets
+* Tenderly Virtual TestNets provide developer environments where wallets can be easily funded.
+* You might want to take advantage of the other Tenderly tooling
+
 ## Configuration
 
 The facilitator can be configured through environment variables or command line arguments. Command line arguments take precedence over environment variables.
@@ -49,7 +55,7 @@ npx local-x402-facilitator --port 9000 --rpc "https://rpc.vnet.tenderly.co/devne
 
 - **Port**: Must be a valid number between 1 and 65535
 - **Tenderly RPC URL**: Must be a valid URL if provided
-- **Tenderly Dependencies**: If `TENDERLY_RPC` is provided, all other Tenderly fields (account, project, access key) become required
+- **Tenderly Dependencies**: If `TENDERLY_RPC` is not provided, all other Tenderly fields (account, project, access key) become required
 
 ### Usage Examples
 
@@ -63,3 +69,5 @@ npm run dev -- --port 3000
 # Full Tenderly configuration
 npm run dev -- --rpc "https://rpc.vnet.tenderly.co/devnet/abc123" --account "myaccount" --project "myproject" --access-key "mykey"
 ```
+
+## Roadmap

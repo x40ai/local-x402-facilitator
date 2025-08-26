@@ -23,7 +23,7 @@ class TenderlyClient {
             baseURL: `https://api.tenderly.co/api/v1/account/${config.tenderly.accountName}/project/${config.tenderly.projectName}`,
             headers: {
                 "X-Access-Key": config.tenderly.accessKey,
-            },
+            }
         });
 
         if (config.tenderly.rpc) {
@@ -100,7 +100,7 @@ class TenderlyClient {
 
     async fundErc20Wallet(client: any, address: string, amount: number) {
         const defaultAsset = getDefaultAsset(ChainIdToNetwork[base.id]);
-
+        
         const result = await client.request({
             method: "tenderly_addErc20Balance",
             params: [
