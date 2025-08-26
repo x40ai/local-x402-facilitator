@@ -1,6 +1,8 @@
 import axios, { AxiosInstance } from "axios";
-import { Account, createPublicClient, formatEther, parseEther, formatUnits, http, weiUnits, toHex } from "viem";
+import { Account, createPublicClient, formatEther, parseEther, formatUnits, http, weiUnits, toHex, erc20Abi, parseUnits } from "viem";
 import { base } from "viem/chains";
+import { evm, ChainIdToNetwork, Network, schemes } from "x402/types";
+import { getDefaultAsset } from "x402/shared";
 
 import config from "../config";
 import { privateKeyToAccount } from "viem/accounts";
@@ -8,6 +10,7 @@ import chalk from "chalk";
 import { randomUUID } from "crypto";
 
 const MIN_BALANCE = 100;
+const MIN_ERC_20_BALANCE = 10000;
 
 class TenderlyClient {
     private static instance: TenderlyClient;
@@ -87,6 +90,25 @@ class TenderlyClient {
         return result;
     }
 
+    async fundErc20Wallet(client: any, address: string, amount: number) {
+        const defaultAsset = getDefaultAsset(ChainIdToNetwork[base.id]);
+
+        const result = await client.request({
+            method: "tenderly_addErc20Balance",
+            params: [
+                defaultAsset.address,
+                [
+                    address,
+                ],
+                toHex(parseUnits(amount.toString(), defaultAsset.decimals)),
+            ],
+        });
+
+        console.log(chalk.yellow("Funded wallet:"), address, "with", amount, defaultAsset.eip712.name);
+
+        return result;
+    }
+
     async checkIfTestnetIsSetup() {
         let _rpcUrl = this.rpcUrl;
 
@@ -133,6 +155,27 @@ class TenderlyClient {
             await this.fundWallet(client, config.facilitatorAddress, MIN_BALANCE);
         } else {
             console.log(chalk.yellow("Facilitator has sufficient balance:"), formatEther(balance), "ETH");
+        }
+
+        if (config.dummySignerAddress) {
+            const defaultAsset = getDefaultAsset(ChainIdToNetwork[base.id]);
+
+            const dummySignerBalance = await client.readContract({
+                address: defaultAsset.address,
+                abi: erc20Abi,
+                functionName: "balanceOf",
+                args: [config.dummySignerAddress],
+            });
+
+            const dummySignerBalanceFormatted = formatUnits(dummySignerBalance, defaultAsset.decimals);
+
+            if (parseFloat(dummySignerBalanceFormatted) < MIN_ERC_20_BALANCE) {
+                console.log(chalk.yellow(`Dummy signer balance is less than ${MIN_ERC_20_BALANCE} ${defaultAsset.eip712.name}`));
+
+                await this.fundErc20Wallet(client, config.dummySignerAddress, MIN_ERC_20_BALANCE);
+            } else {
+                console.log(chalk.yellow("Dummy signer has sufficient balance:"), dummySignerBalanceFormatted, defaultAsset.eip712.name);
+            }
         }
     }
 

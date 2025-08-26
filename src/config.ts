@@ -12,6 +12,8 @@ export interface ConfigData {
   facilitatorPort: number;
   facilitatorAddress: `0x${string}`;
   facilitatorPrivateKey: `0x${string}`;
+  dummySignerAddress?: `0x${string}`;
+  dummySignerPrivateKey?: `0x${string}`;
   tenderly: {
     rpc?: string;
     accountName?: string;
@@ -143,6 +145,13 @@ class Config {
     
     // Validate required Tenderly fields if RPC is provided
     Config.validateTenderlyConfig(config);
+
+    if (process.env.DUMMY_SIGNER_PRIVATE_KEY) {
+      const dummySignerPrivateKey = process.env.DUMMY_SIGNER_PRIVATE_KEY as `0x${string}`;
+      const dummySignerAddress = privateKeyToAccount(dummySignerPrivateKey).address;
+      config.dummySignerAddress = dummySignerAddress;
+      config.dummySignerPrivateKey = dummySignerPrivateKey;
+    }
     
     return config;
   }
@@ -164,6 +173,18 @@ class Config {
     this.validateConfigIsLoaded();
 
     return this.data!.facilitatorPrivateKey;
+  }
+
+  public get dummySignerAddress(): `0x${string}` | undefined {
+    this.validateConfigIsLoaded();
+
+    return this.data!.dummySignerAddress;
+  }
+
+  public get dummySignerPrivateKey(): `0x${string}` | undefined {
+    this.validateConfigIsLoaded();
+
+    return this.data!.dummySignerPrivateKey;
   }
 
   public get tenderly() {
@@ -193,6 +214,11 @@ class Config {
     } else {
       console.log('\tRPC: Not configured');
     }
+
+    if (this.data!.dummySignerAddress) {
+      console.log(`\n\tDummy Signer Address: ${chalk.magenta(this.data!.dummySignerAddress)}`);
+    }
+
     console.log('');
   }
 }
