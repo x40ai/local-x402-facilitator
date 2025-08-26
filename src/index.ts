@@ -1,9 +1,12 @@
 import config, { ConfigError } from './config';
 import { startServer } from './facilitator/server';
+import TenderlyClient from './tenderly/client';
 
 export function main() {
   try {
     config.loadConfig();
+    
+    TenderlyClient.initialize();
 
     startServer();
   } catch (error) {

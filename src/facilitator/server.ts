@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import config from '../config';
 
 import appRouter from './router';
+import TenderlyClient from '../tenderly/client';
 
 const app = express();
 
@@ -35,10 +36,16 @@ const serverAsciiArt = [
 
 // Start server
 export function startServer() {
-  const server = app.listen(config.facilitatorPort, () => {
+  const server = app.listen(config.facilitatorPort, async () => {
     console.log(serverAsciiArt);
     
     config.printSetup();
+
+    const tenderlyClient = TenderlyClient.getInstance();
+
+    const isSetup = await tenderlyClient.checkIfTestnetIsSetup();
+
+    // await tenderlyClient.checkIfTestnetIsSetup();
   });
 
   // Graceful shutdown handling

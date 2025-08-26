@@ -160,6 +160,12 @@ class Config {
     return this.data!.facilitatorAddress;
   }
 
+  public get facilitatorPrivateKey(): `0x${string}` {
+    this.validateConfigIsLoaded();
+
+    return this.data!.facilitatorPrivateKey;
+  }
+
   public get tenderly() {
     this.validateConfigIsLoaded();
 
