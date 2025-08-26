@@ -51,7 +51,7 @@ class Config {
 
   private static parseCommandLineArgs(): ConfigOptions {
     const program = new Command();
-    
+
     program
       .name('local-x402-facilitator')
       .description('Local x402 facilitator server for development')
@@ -68,30 +68,32 @@ class Config {
   private static validateTenderlyConfig(config: ConfigData): void {
     const { tenderly } = config;
 
-    const missingFields: string[] = [];
+    if (!tenderly.rpc) {
+      const missingFields: string[] = [];
 
-    if (!tenderly.accountName) {
-      missingFields.push('TENDERLY_ACCOUNT_NAME or --account');
-    }
+      if (!tenderly.accountName) {
+        missingFields.push('TENDERLY_ACCOUNT_NAME or --account');
+      }
 
-    if (!tenderly.projectName) {
-      missingFields.push('TENDERLY_PROJECT_NAME or --project');
-    }
+      if (!tenderly.projectName) {
+        missingFields.push('TENDERLY_PROJECT_NAME or --project');
+      }
 
-    if (!tenderly.accessKey) {
-      missingFields.push('TENDERLY_ACCESS_KEY or --access-key');
-    }
+      if (!tenderly.accessKey) {
+        missingFields.push('TENDERLY_ACCESS_KEY or --access-key');
+      }
 
-    if (missingFields.length > 0) {
-      throw new ConfigError(
-        `For creating Tenderly Virtual TestNets, the following fields are required: ${missingFields.join(', ')}`
-      );
+      if (missingFields.length > 0) {
+        throw new ConfigError(
+          `When not using a fixed Tenderly RPC URL, the following fields are required: ${missingFields.join(', ')}`
+        );
+      }
     }
   }
 
   private static validateUrl(url: string | undefined, fieldName: string): string | undefined {
     if (!url) return undefined;
-    
+
     try {
       new URL(url);
       return url;
@@ -102,33 +104,33 @@ class Config {
 
   private static validatePort(port: string | undefined, defaultPort: number): number {
     if (!port) return defaultPort;
-    
+
     const parsedPort = parseInt(port, 10);
-    
+
     if (isNaN(parsedPort) || parsedPort < 1 || parsedPort > 65535) {
       throw new ConfigError(`Invalid port number: ${port}. Port must be between 1 and 65535.`);
     }
-    
+
     return parsedPort;
   }
 
   private static loadInternal(): ConfigData {
     const cliOptions = Config.parseCommandLineArgs();
-    
+
     // Get values from CLI args or environment variables (CLI takes precedence)
     const facilitatorPortStr = cliOptions.port || process.env.FACILITATOR_PORT;
     const tenderlyRpc = cliOptions.rpc || process.env.TENDERLY_RPC;
     const tenderlyAccountName = cliOptions.account || process.env.TENDERLY_ACCOUNT_NAME;
     const tenderlyProjectName = cliOptions.project || process.env.TENDERLY_PROJECT_NAME;
     const tenderlyAccessKey = cliOptions.accessKey || process.env.TENDERLY_ACCESS_KEY;
-    
+
     // Validate and parse values
     const facilitatorPort = Config.validatePort(facilitatorPortStr, 8402);
     const facilitatorPrivateKey = process.env.FACILITATOR_PRIVATE_KEY as `0x${string}` || DEFAULT_FACILITATOR_PRIVATE_KEY;
     const validatedRpc = Config.validateUrl(tenderlyRpc, 'TENDERLY_RPC');
 
     const facilitatorAddress = privateKeyToAccount(facilitatorPrivateKey as `0x${string}`).address;
-    
+
     const config: ConfigData = {
       facilitatorPort,
       facilitatorAddress,
@@ -140,7 +142,7 @@ class Config {
         accessKey: tenderlyAccessKey,
       },
     };
-    
+
     // Validate required Tenderly fields if RPC is provided
     Config.validateTenderlyConfig(config);
 
@@ -150,7 +152,7 @@ class Config {
       config.testWalletAddress = testWalletAddress;
       config.testWalletPrivateKey = testWalletPrivateKey;
     }
-    
+
     return config;
   }
 
@@ -206,7 +208,7 @@ class Config {
 
     console.log(`\tFacilitator Port: ${chalk.blue(`http://localhost:${this.data!.facilitatorPort}`)}`);
     console.log(`\tFacilitator Address: ${chalk.blue(this.data!.facilitatorAddress)}`);
-    
+
     if (this.data!.tenderly.rpc) {
       console.log(`\tRPC URL: ${chalk.blue(this.data!.tenderly.rpc)}`);
     } else {
