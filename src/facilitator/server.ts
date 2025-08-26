@@ -1,5 +1,7 @@
 import express from 'express';
 import chalk from 'chalk';
+import logger from 'pino-http';
+import pino from 'pino';
 
 import config from '../config';
 
@@ -10,6 +12,37 @@ const app = express();
 
 // Basic middleware
 app.use(express.json());
+
+const loggerMiddleware = logger({
+  autoLogging: false, // Disable automatic request/response logging
+  transport: {
+    target: 'pino-pretty',
+    options: {
+      colorize: true,
+      translateTime: 'SYS:standard',
+      ignore: 'pid,hostname,category,eventCode,req,res,responseTime',
+      messageFormat: '{msg}',
+    },
+  },
+});
+
+app.use(loggerMiddleware);
+
+app.use((req, res, next) => {
+  const originalSend = res.send;
+  res.send = function(body) {
+    const message = `[${req.method}] ${req.url} - HTTP ${res.statusCode}`;
+    
+    if (req.path === '/verify' || req.path === '/settle') {
+      req.log.info({response: JSON.parse(body)}, message);
+    } else {
+      req.log.info(message);
+    }
+
+    return originalSend.call(this, body);
+  };
+  next();
+});
 
 app.use('/', appRouter);
 
@@ -43,9 +76,7 @@ export function startServer() {
 
     const tenderlyClient = TenderlyClient.getInstance();
 
-    const isSetup = await tenderlyClient.checkIfTestnetIsSetup();
-
-    // await tenderlyClient.checkIfTestnetIsSetup();
+    await tenderlyClient.checkIfTestnetIsSetup();
   });
 
   // Graceful shutdown handling
