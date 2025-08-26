@@ -67,27 +67,25 @@ class Config {
 
   private static validateTenderlyConfig(config: ConfigData): void {
     const { tenderly } = config;
-    
-    if (tenderly.rpc) {
-      const missingFields: string[] = [];
-      
-      if (!tenderly.accountName) {
-        missingFields.push('TENDERLY_ACCOUNT_NAME or --account');
-      }
-      
-      if (!tenderly.projectName) {
-        missingFields.push('TENDERLY_PROJECT_NAME or --project');
-      }
-      
-      if (!tenderly.accessKey) {
-        missingFields.push('TENDERLY_ACCESS_KEY or --access-key');
-      }
-      
-      if (missingFields.length > 0) {
-        throw new ConfigError(
-          `When TENDERLY_RPC is provided, the following fields are required: ${missingFields.join(', ')}`
-        );
-      }
+
+    const missingFields: string[] = [];
+
+    if (!tenderly.accountName) {
+      missingFields.push('TENDERLY_ACCOUNT_NAME or --account');
+    }
+
+    if (!tenderly.projectName) {
+      missingFields.push('TENDERLY_PROJECT_NAME or --project');
+    }
+
+    if (!tenderly.accessKey) {
+      missingFields.push('TENDERLY_ACCESS_KEY or --access-key');
+    }
+
+    if (missingFields.length > 0) {
+      throw new ConfigError(
+        `For creating Tenderly Virtual TestNets, the following fields are required: ${missingFields.join(', ')}`
+      );
     }
   }
 

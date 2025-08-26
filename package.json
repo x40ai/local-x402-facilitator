@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "tsc && tsc-alias",
+    "postbuild": "chmod +x dist/bin/cli.js",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "cli": "node dist/bin/cli.js",
