@@ -8,9 +8,28 @@ An x402 facilitator server for local development that works natively with Tender
 * Tenderly Virtual TestNets provide developer environments where wallets can be easily funded.
 * You might want to take advantage of the other Tenderly tooling
 
-## Configuration
+## Usage
 
 The facilitator can be configured through environment variables or command line arguments. Command line arguments take precedence over environment variables.
+
+```
+npx local-x402-facilitator --rpc <TENDERLY_TESTNET_RPC_URL>
+```
+
+Or 
+
+```
+```
+
+```json
+// package.json
+{
+    // ...package.json
+    "scripts": {
+        "facilitator": "local-x402-facilitator --rpc <TENDERLY_TESTNET_RPC_URL>",
+    }
+}
+```
 
 ### Environment Variables
 
@@ -19,6 +38,11 @@ Create a `.env` file in the project root with the following variables:
 ```bash
 # Optional: Facilitator port (defaults to 8402)
 FACILITATOR_PORT=8402
+# Optional: Facilitator Wallet Private Key (defaults to pk for 0x4dFbEAb12fEf03583B22a82D4ac338116AaD4a27)
+FACILITATOR_WALLET_PRIVATE=
+
+# Optiona: Private key for Test Wallet that is used to sign x402Response payloads and is automatically funded when boothing a Virtual TestNet.
+TEST_WALLET_PRIVATE_KEY
 
 # Optional: Tenderly configuration for Virtual TestNets
 # If you provide TENDERLY_RPC, then all other Tenderly fields become required
@@ -26,7 +50,8 @@ FACILITATOR_PORT=8402
 # Tenderly RPC URL (optional)
 TENDERLY_RPC=https://rpc.vnet.tenderly.co/devnet/your-virtual-testnet-id
 
-# Required when TENDERLY_RPC is provided
+# Required when TENDERLY_RPC is not provided
+# This will then enable dynamic Virtual TestNet creation.
 TENDERLY_ACCOUNT_NAME=your-account-name
 TENDERLY_PROJECT_NAME=your-project-name
 TENDERLY_ACCESS_KEY=your-access-key
@@ -69,5 +94,35 @@ npm run dev -- --port 3000
 # Full Tenderly configuration
 npm run dev -- --rpc "https://rpc.vnet.tenderly.co/devnet/abc123" --account "myaccount" --project "myproject" --access-key "mykey"
 ```
+
+## Development
+
+### Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start in development mode
+npm run dev
+
+# Build the project
+npm run build
+
+# Run linting
+npm run lint
+
+# Test the CLI
+npm run cli -- --help
+```
+
+### Publishing
+
+This package uses automated NPM publishing via GitHub Actions following [GitHub's official tutorial](https://docs.github.com/en/actions/tutorials/publish-packages/publish-nodejs-packages). See [Publishing Guide](./.github/PUBLISHING.md) for setup instructions.
+
+To publish a new version:
+
+1. Create a GitHub release with a version tag (e.g., `v0.1.1`)
+2. The GitHub Action automatically publishes to NPM
 
 ## Roadmap
