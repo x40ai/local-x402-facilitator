@@ -1,6 +1,6 @@
 {
   "name": "local-x402-facilitator",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "An x402 facilitator server for local development that works natively with Tenderly Virtual TestNets. Avoiding bottlenecks while testing and creating sandbox environments for x402 development.",
   "type": "module",
   "main": "dist/index.js",
