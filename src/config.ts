@@ -219,7 +219,6 @@ class Config {
   public printSetup(): void {
     this.validateConfigIsLoaded();
 
-    console.log(`\tVersion: ${chalk.blue(process.env.npm_package_version)}`);
     console.log(`\tNetwork: ${chalk.blue(`🟦 ${base.name}`)}`);
     console.log(`\tFacilitator Port: ${chalk.blue(`http://localhost:${this.data!.facilitatorPort}`)}`);
     console.log(`\tFacilitator Address: ${chalk.blue(this.data!.facilitatorAddress)}`);
