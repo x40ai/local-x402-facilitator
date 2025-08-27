@@ -18,6 +18,8 @@ const verify = async (payload: PaymentPayload, paymentRequirements: PaymentRequi
     if (rpcUrlOverride) {
         const {isSufficient, balance} = await TenderlyClient.getInstance().verifyFacilitatorBalance(rpcUrlOverride);
 
+        console.warn(chalk.blue(`\n[RPC Override] Using RPC URL: ${rpcUrlOverride}`));
+
         if (!isSufficient) {
             console.warn(chalk.bgRedBright(`\n[Warning]`), chalk.red(`Facilitator balance is low: ${balance} ETH\n`));
         }

@@ -21,9 +21,9 @@ appRouter.post('/verify', async (req, res) => {
 });
 
 appRouter.post('/settle', async (req, res) => {
-    const {paymentRequirements, paymentPayload} = req.body;
+    const {paymentRequirements, paymentPayload, customRpcUrl} = req.body;
 
-    const result = await settle(paymentPayload, paymentRequirements);
+    const result = await settle(paymentPayload, paymentRequirements, customRpcUrl);
 
     return res.json(result);
 });
