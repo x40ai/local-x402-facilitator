@@ -20,6 +20,11 @@
     "lint:fix": "eslint src --ext .ts --fix",
     "test": "jest"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/x40ai/local-x402-facilitator"
+  },
+  "homepage": "https://github.com/miljan-tekic/local-x402-facilitator",
   "keywords": [
     "x402",
     "facilitator",
