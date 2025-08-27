@@ -4,28 +4,30 @@ An x402 facilitator server for local development that works natively with Tender
 
 ## Motivation
 
-* Working with x402 on Base Sepolia and other Testnets requires faucets
-* Tenderly Virtual TestNets provide developer environments where wallets can be easily funded.
-* You might want to take advantage of the other Tenderly tooling
+Working with x402 on Base Sepolia and other testnets typically requires utilising faucets for wallet funding, which can create development bottlenecks. Tenderly Virtual TestNets solve this by providing isolated developer environments with easily funded wallets, while also giving you access to all of Tenderly's blockchain development tooling.
+
+> NOTICE: This server is meant solely for local development and is **not meant to be used in production environments!**.
 
 ## Usage
 
-The facilitator can be configured through environment variables or command line arguments. Command line arguments take precedence over environment variables.
+The local x402 facilitator is meant to be run as a local server alongside your local development environemnet.
 
-```
+The server can be configured through environment variables or command line arguments. Command line arguments take precedence over environment variables.
+
+You can running using the `npx` command:
+
+```bash
 npx local-x402-facilitator --rpc <TENDERLY_TESTNET_RPC_URL>
 ```
 
-Or 
+Or alternatively you can install the npm package and run it using an npm script.
 
-```
-npm install local-x402-facilitator
+```bash
+npm install --save-dev local-x402-facilitator
 ```
 
 ```json
-// package.json
 {
-    // ...package.json
     "scripts": {
         "facilitator": "local-x402-facilitator --rpc <TENDERLY_TESTNET_RPC_URL>",
     }
@@ -34,21 +36,22 @@ npm install local-x402-facilitator
 
 ### Environment Variables
 
-Create a `.env` file in the project root with the following variables:
+The facilitator server loads the `.env` file from the root of your project. Create a `.env` file in the project root with the following variables:
 
 ```bash
 # Optional: Facilitator port (defaults to 8402)
 FACILITATOR_PORT=8402
+
 # Optional: Facilitator Wallet Private Key (defaults to pk for 0x4dFbEAb12fEf03583B22a82D4ac338116AaD4a27)
 FACILITATOR_WALLET_PRIVATE=
 
-# Optiona: Private key for Test Wallet that is used to sign x402Response payloads and is automatically funded when boothing a Virtual TestNet.
-TEST_WALLET_PRIVATE_KEY
+# Optional: Private key for Test Wallet that can used to sign x402Response payloads and is automatically funded when boothing a Virtual TestNet.
+TEST_WALLET_PRIVATE_KEY=
 
-# Optional: Tenderly configuration for Virtual TestNets
-# If you provide TENDERLY_RPC, then all other Tenderly fields become required
+# enderly configuration for Virtual TestNets
+# If you do not provide a fixed TENDERLY_RPC, then all other Tenderly fields become required
 
-# Tenderly RPC URL (optional)
+# Tenderly RPC URL (optional) - Recommended setting for those that have paid Tenderly accounts.
 TENDERLY_RPC=https://rpc.vnet.tenderly.co/devnet/your-virtual-testnet-id
 
 # Required when TENDERLY_RPC is not provided
@@ -58,17 +61,9 @@ TENDERLY_PROJECT_NAME=your-project-name
 TENDERLY_ACCESS_KEY=your-access-key
 ```
 
-### Command Line Arguments
-
-```bash
-# Start with default configuration
-npm run dev
-
-# Or use the CLI with custom arguments
-npx local-x402-facilitator --port 9000 --rpc "https://rpc.vnet.tenderly.co/devnet/your-testnet" --account "your-account" --project "your-project" --access-key "your-key"
-```
-
 #### Available CLI Options
+
+When running the server using the CLI command, you can alternatively use the following CLI flags.
 
 - `-p, --port <port>`: Facilitator port number (env: FACILITATOR_PORT)
 - `-r, --rpc <url>`: Tenderly RPC URL (env: TENDERLY_RPC)  
@@ -77,23 +72,56 @@ npx local-x402-facilitator --port 9000 --rpc "https://rpc.vnet.tenderly.co/devne
 - `-k, --access-key <key>`: Tenderly access key (env: TENDERLY_ACCESS_KEY)
 - `-h, --help`: Display help for command
 
-### Configuration Validation
+### Usage with x402 Client
 
-- **Port**: Must be a valid number between 1 and 65535
-- **Tenderly RPC URL**: Must be a valid URL if provided
-- **Tenderly Dependencies**: If `TENDERLY_RPC` is not provided, all other Tenderly fields (account, project, access key) become required
+This local facilitator server can then be used with the the x402 client library.
 
-### Usage Examples
+```js
+import {useFacilitator} from 'x402/verify';
 
-```bash
-# Default configuration (port 8402, no Tenderly)
-npm run dev
+const facilitator = useFacilitator({
+    url: 'http://localhost:8402',
+});
 
-# Custom port only
-npm run dev -- --port 3000
+await facilitator.verify(signedPayload, paymentRequirement);
+```
 
-# Full Tenderly configuration
-npm run dev -- --rpc "https://rpc.vnet.tenderly.co/devnet/abc123" --account "myaccount" --project "myproject" --access-key "mykey"
+## API Endpoints
+
+By default the facilitator server is available at `http://localhost:8402`
+
+### POST - /verify
+
+```ts
+import { PaymentPayload, PaymentRequirements } from "x402/types";
+
+type VerifyRequestBody {
+    paymentPayload: PaymentPayload;
+    paymentRequirements: PaymentRequirements;
+    customRpcUrl?: string; // When this param is provided it overrides the RPC Url from the environment.
+}
+```
+
+### POST - /settle
+
+```ts
+import { PaymentPayload, PaymentRequirements } from "x402/types";
+
+type SettleRequestBody {
+    paymentPayload: PaymentPayload;
+    paymentRequirements: PaymentRequirements;
+    customRpcUrl?: string; // When this param is provided it overrides the RPC Url from the environment.
+}
+```
+
+### POST - /test/sign
+
+Requires the `TEST_WALLET_PRIVATE_KEY` to be defined.
+
+```ts
+import { x402Response } from "x402/types";
+
+type TestWalletSignBody = x402Response;
 ```
 
 ## Development
@@ -110,20 +138,14 @@ npm run dev
 # Build the project
 npm run build
 
-# Run linting
-npm run lint
-
 # Test the CLI
 npm run cli -- --help
 ```
 
-### Publishing
-
-This package uses automated NPM publishing via GitHub Actions following [GitHub's official tutorial](https://docs.github.com/en/actions/tutorials/publish-packages/publish-nodejs-packages). See [Publishing Guide](./.github/PUBLISHING.md) for setup instructions.
-
-To publish a new version:
-
-1. Create a GitHub release with a version tag (e.g., `v0.1.1`)
-2. The GitHub Action automatically publishes to NPM
-
 ## Roadmap
+
+| Feature | State |
+| --- | --- |
+| Add support for other Networks besides Base | TODO |
+| Create local studio app for viewing requests | TODO |
+| Add dynamic creation of new Virtual TestNets when current TestNets reaches free plan block height limit | TODO |

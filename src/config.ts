@@ -86,7 +86,14 @@ class Config {
 
       if (missingFields.length > 0) {
         throw new ConfigError(
-          `When not using a fixed Tenderly RPC URL, the following fields are required: ${missingFields.join(', ')}`
+          `When not using a fixed Tenderly RPC URL, the following fields are required: ${missingFields.join(', ')}\n` 
+          + chalk.red(`\n\tThe Local x402 Facilitator relies on Tenderly Virtual TestNets in order to create sandbox environments for x402 development.\n`)
+          + chalk.red(`\tAuthentication Docs: `) + "https://docs.tenderly.co/reference/api#/%23authentication\n"
+          + chalk.red(`\tAccess Key Docs: `) + "https://docs.tenderly.co/account/projects/how-to-generate-api-access-token\n"
+          + chalk.red(`\n\tAlternatively you can use the TENDERLY_RPC env variable or --rpc flag to specify a fixed RPC URL for the facilitator to use.\n`)
+          + chalk.red(`\tUse the Admin RPC URL for this as the server will need access to the TestNet cheatcodes.\n`)
+          + chalk.red(`\tVirtual TestNets Docs: `) + "https://docs.tenderly.co/virtual-testnets\n"
+          // + chalk.blue(`\Local x402 Facilitator Docs: `) + "https://docs.tenderly.co/account/projects/how-to-generate-api-access-token\n"
         );
       }
     }
