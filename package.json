@@ -4,8 +4,9 @@
   "description": "An x402 facilitator server for local development that works natively with Tenderly Virtual TestNets. Avoiding bottlenecks while testing and creating sandbox environments for x402 development.",
   "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
-    "local-x402-facilitator": "./dist/bin/cli.js"
+    "local-x402-facilitator": "dist/bin/cli.js"
   },
   "scripts": {
     "build": "tsc && tsc-alias",
