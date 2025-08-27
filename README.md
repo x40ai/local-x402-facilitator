@@ -19,6 +19,7 @@ npx local-x402-facilitator --rpc <TENDERLY_TESTNET_RPC_URL>
 Or 
 
 ```
+npm install local-x402-facilitator
 ```
 
 ```json
