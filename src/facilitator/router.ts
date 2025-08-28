@@ -5,7 +5,7 @@ import { x402Response } from "x402/types";
 import settle from "./settle";
 import verify from "./verify";
 import { signPaymentRequirement } from "./test-wallet";
-import { SettleRequestBody, VerifyRequestBody } from "../types";
+import { SettleRequestBody, TestWalletSignRequestBody, VerifyRequestBody } from "../types";
 
 const appRouter = Router();
 
@@ -32,10 +32,10 @@ appRouter.post('/settle', async (req: Request<{}, {}, SettleRequestBody>, res) =
     return res.json(result);
 });
 
-appRouter.post('/test/sign', async (req, res) => {
+appRouter.post('/test/sign', async (req: Request<{}, {}, TestWalletSignRequestBody>, res) => {
     const response = req.body;
 
-    const result = await signPaymentRequirement(response as x402Response);
+    const result = await signPaymentRequirement(response);
 
     return res.json(result);
 });
