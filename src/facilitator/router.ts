@@ -9,7 +9,10 @@ import { signPaymentRequirement } from "./test-wallet";
 const appRouter = Router();
 
 appRouter.get('/health', (req, res) => {
-    res.json({ status: 'ok' });
+    res.json({ 
+        status: 'ok',
+        timestamp: new Date().toISOString()
+    });
 });
 
 appRouter.post('/verify', async (req, res) => {

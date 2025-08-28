@@ -231,10 +231,8 @@ class Config {
 
     if (this.data!.testWalletAddress) {
       console.log(`\n\t${chalk.magenta("[Test Wallet Enabled]")}`);
-      console.log(`\tTest Wallet Address: ${chalk.magenta(this.data!.testWalletAddress)}`);
+      console.log(`\tTest Wallet Address: ${chalk.magenta(this.data!.testWalletAddress)}\n`);
     }
-
-    console.log('');
   }
 }
 

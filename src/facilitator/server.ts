@@ -32,7 +32,7 @@ app.use((req, res, next) => {
   const originalSend = res.send;
   res.send = function(body) {
     const message = `[${req.method}] ${req.url} - HTTP ${res.statusCode}`;
-    
+
     if (req.path === '/verify' || req.path === '/settle') {
       req.log.info({response: JSON.parse(body)}, message);
     } else {
