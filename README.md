@@ -95,10 +95,10 @@ By default the facilitator server is available at `http://localhost:8402`
 ```ts
 import { PaymentPayload, PaymentRequirements } from "x402/types";
 
-type VerifyRequestBody {
+type VerifyRequestBody = {
     paymentPayload: PaymentPayload;
     paymentRequirements: PaymentRequirements;
-    customRpcUrl?: string; // When this param is provided it overrides the RPC Url from the environment.
+    facilitatorOptions?: CustomFacilitatorOptions;
 }
 ```
 
@@ -107,10 +107,10 @@ type VerifyRequestBody {
 ```ts
 import { PaymentPayload, PaymentRequirements } from "x402/types";
 
-type SettleRequestBody {
+type SettleRequestBody = {
     paymentPayload: PaymentPayload;
     paymentRequirements: PaymentRequirements;
-    customRpcUrl?: string; // When this param is provided it overrides the RPC Url from the environment.
+    facilitatorOptions?: CustomFacilitatorOptions;
 }
 ```
 
@@ -122,6 +122,19 @@ Requires the `TEST_WALLET_PRIVATE_KEY` to be defined.
 import { x402Response } from "x402/types";
 
 type TestWalletSignBody = x402Response;
+```
+
+### Types
+
+You can check the types for `PaymentPayload`, `PaymentRequirements` and `x402Response` in the official [x402 types](https://github.com/coinbase/x402/blob/main/typescript/packages/x402/src/types/verify/x402Specs.ts) repository.
+
+The below types are the custom types for the local x402 facilitator.
+
+```ts
+type CustomFacilitatorOptions = {
+    rpcUrl?: string; // When this param is provided it overrides the defined RPC URL from the environment used for Facilitator client calls.
+    skipBalanceCheck?: boolean; // Disable checking if the facilitator wallet has enough balance on this RPC Url. Set this to `true` to reduce the response time as it doesn't call the RPC Url before performing transactions.
+}
 ```
 
 ## Development
