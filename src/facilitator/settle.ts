@@ -8,8 +8,11 @@ import chalk from "chalk";
 import config from "../config";
 import { useFacilitator } from "x402/verify";
 import TenderlyClient from "../tenderly/client";
+import { CustomFacilitatorOptions } from "../types";
 
-const settle = async (payload: PaymentPayload, paymentRequirements: PaymentRequirements, rpcUrlOverride?: string) => {
+const settle = async (payload: PaymentPayload, paymentRequirements: PaymentRequirements, facilitatorOptions?: CustomFacilitatorOptions) => {
+    const { rpcUrl: rpcUrlOverride, skipBalanceCheck } = facilitatorOptions || {};
+
     if (!rpcUrlOverride && !config.tenderly.rpc) {
         const facilitator = useFacilitator();
 
@@ -17,12 +20,14 @@ const settle = async (payload: PaymentPayload, paymentRequirements: PaymentRequi
     }
 
     if (rpcUrlOverride) {
-        const {isSufficient, balance} = await TenderlyClient.getInstance().verifyFacilitatorBalance(rpcUrlOverride);
-
         console.log(chalk.blue(`\n[RPC Override] Using RPC URL: ${rpcUrlOverride}\n`));
 
-        if (!isSufficient) {
-            console.log(chalk.bgRedBright(`[Warning]`), chalk.red(`Facilitator balance is low: ${balance} ETH\n`));
+        if (!skipBalanceCheck) {
+            const {isSufficient, balance} = await TenderlyClient.getInstance().verifyFacilitatorBalance(rpcUrlOverride);
+
+            if (!isSufficient) {
+                console.log(chalk.bgRedBright(`[Warning]`), chalk.red(`Facilitator balance is low: ${balance} ETH\n`));
+            }
         }
     }
 

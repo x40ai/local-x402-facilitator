@@ -1,10 +1,11 @@
-import { Router } from "express";
+import { Router, Request } from "express";
 import { x402Response } from "x402/types";
 
 
 import settle from "./settle";
 import verify from "./verify";
 import { signPaymentRequirement } from "./test-wallet";
+import { SettleRequestBody, VerifyRequestBody } from "../types";
 
 const appRouter = Router();
 
@@ -15,18 +16,18 @@ appRouter.get('/health', (req, res) => {
     });
 });
 
-appRouter.post('/verify', async (req, res) => {
-    const {paymentRequirements, paymentPayload, customRpcUrl} = req.body;
+appRouter.post('/verify', async (req: Request<{}, {}, VerifyRequestBody>, res) => {
+    const {paymentRequirements, paymentPayload, facilitatorOptions} = req.body;
 
-    const result = await verify(paymentPayload, paymentRequirements, customRpcUrl);
+    const result = await verify(paymentPayload, paymentRequirements, facilitatorOptions);
 
     return res.json(result);
 });
 
-appRouter.post('/settle', async (req, res) => {
-    const {paymentRequirements, paymentPayload, customRpcUrl} = req.body;
+appRouter.post('/settle', async (req: Request<{}, {}, SettleRequestBody>, res) => {
+    const {paymentRequirements, paymentPayload, facilitatorOptions} = req.body;
 
-    const result = await settle(paymentPayload, paymentRequirements, customRpcUrl);
+    const result = await settle(paymentPayload, paymentRequirements, facilitatorOptions);
 
     return res.json(result);
 });

@@ -7,21 +7,28 @@ import chalk from "chalk";
 
 import config from "../config";
 import TenderlyClient from "../tenderly/client";
+import { CustomFacilitatorOptions } from "../types";
 
-const verify = async (payload: PaymentPayload, paymentRequirements: PaymentRequirements, rpcUrlOverride?: string) => {
+const verify = async (payload: PaymentPayload, paymentRequirements: PaymentRequirements, facilitatorOptions?: CustomFacilitatorOptions) => {
+    const {rpcUrl: rpcUrlOverride, skipBalanceCheck} = facilitatorOptions || {};
+    
     if (!rpcUrlOverride && !config.tenderly.rpc) {
         const facilitator = useFacilitator();
 
         return facilitator.verify(payload, paymentRequirements);
     }
 
+ 
     if (rpcUrlOverride) {
-        const {isSufficient, balance} = await TenderlyClient.getInstance().verifyFacilitatorBalance(rpcUrlOverride);
-
         console.warn(chalk.blue(`\n[RPC Override] Using RPC URL: ${rpcUrlOverride}`));
+        
+        if (!skipBalanceCheck) {
+            const {isSufficient, balance} = await TenderlyClient.getInstance().verifyFacilitatorBalance(rpcUrlOverride);
 
-        if (!isSufficient) {
-            console.warn(chalk.bgRedBright(`\n[Warning]`), chalk.red(`Facilitator balance is low: ${balance} ETH\n`));
+
+            if (!isSufficient) {
+                console.warn(chalk.bgRedBright(`\n[Warning]`), chalk.red(`Facilitator balance is low: ${balance} ETH\n`));
+            }
         }
     }
 
